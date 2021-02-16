@@ -33,7 +33,7 @@ namespace trendwallapi.Controllers
         //https://localhost:5001/api/trends/14-02-2021/14-02-2021/0000/1600/it
 
         [HttpGet("{from}/{to}/{ora_from}/{ora_to}/{country}")]
-        public ActionResult<List<KeyValuePair<string, List<Trend>>>> Get(string from, string to, string ora_from, string ora_to, string country) 
+        public ActionResult<Dictionary<string, object>> Get(string from, string to, string ora_from, string ora_to, string country) 
         {
             
             try
@@ -61,16 +61,43 @@ namespace trendwallapi.Controllers
                                 into categorieClass
                                 select categorieClass).ToDictionary(gdc => gdc.Key,gdc => gdc.ToList());
 
-                foreach (var item in query)
-                {
-                    
-                }
-                var groupedDemoClasses = (from item in query
-                          group item by item.Timestamp
-                          into groupedDemoClass
-                          select groupedDemoClass).ToDictionary(gdc => gdc.Key.ToString("dd-MM-yyyy HH:mm"), gdc => gdc.ToList());
+                
+                List<Dictionary<string,object>> series = new List<Dictionary<string, object>>();
 
-                return groupedDemoClasses.ToList();
+
+                foreach (var item in per_hashtag)
+                {
+                    Dictionary<string,object> serie = new Dictionary<string, object>();
+                    List<int> data = new List<int>();    
+                    foreach (var cat in categorie)
+                    {
+                        int count = 0;
+                        foreach (var itemcat in item.Value)
+                        {
+                            string datestr = itemcat.Timestamp.ToString("dd-MM-yyyy HH:mm");
+                            if( datestr.Equals(cat))
+                                count = itemcat.Count;
+                        }   
+                        data.Add(count);
+                    }
+                    serie.Add("name",item.Key);
+                    serie.Add("data",data);
+                    
+                    series.Add(serie);
+                }
+
+
+                 Dictionary<string,object> result = new Dictionary<string, object>();
+                 result.Add("categories",categorie);
+                 result.Add("series",series);
+
+
+                // var groupedDemoClasses = (from item in query
+                //           group item by item.Timestamp
+                //           into groupedDemoClass
+                //           select groupedDemoClass).ToDictionary(gdc => gdc.Key.ToString("dd-MM-yyyy HH:mm"), gdc => gdc.ToList());
+
+                return result;
                
             }
             catch (System.Exception e)
