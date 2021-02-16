@@ -33,7 +33,7 @@ namespace trendwallapi.Controllers
         //https://localhost:5001/api/trends/14-02-2021/14-02-2021/0000/1600/it
 
         [HttpGet("{from}/{to}/{ora_from}/{ora_to}/{country}")]
-        public ActionResult<List<IGrouping<string, Trend>>> Get(string from, string to, string ora_from, string ora_to, string country) 
+        public ActionResult<List<KeyValuePair<string, List<Trend>>>> Get(string from, string to, string ora_from, string ora_to, string country) 
         {
             
             try
@@ -49,8 +49,28 @@ namespace trendwallapi.Controllers
                 .ToList();
 
                 
+                // prelevo le categorie del grafico
+                var categorie = (from item in query 
+                                group item by item.Timestamp
+                                into categorieClass
+                                select categorieClass).ToDictionary(gdc => gdc.Key.ToString("dd-MM-yyyy HH:mm")).Keys;
 
-                return list;
+                
+                var per_hashtag = (from item in query 
+                                group item by item.Name
+                                into categorieClass
+                                select categorieClass).ToDictionary(gdc => gdc.Key,gdc => gdc.ToList());
+
+                foreach (var item in query)
+                {
+                    
+                }
+                var groupedDemoClasses = (from item in query
+                          group item by item.Timestamp
+                          into groupedDemoClass
+                          select groupedDemoClass).ToDictionary(gdc => gdc.Key.ToString("dd-MM-yyyy HH:mm"), gdc => gdc.ToList());
+
+                return groupedDemoClasses.ToList();
                
             }
             catch (System.Exception e)
