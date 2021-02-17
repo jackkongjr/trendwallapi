@@ -44,9 +44,7 @@ namespace trendwallapi.Controllers
 
                 List<Trend> query =  _trendsService.Query(dt_from,dt_to,country);
 
-                List<IGrouping<string, Trend>> list = query.GroupBy(x => x.Timestamp.ToString())
-                
-                .ToList();
+                List<IGrouping<string, Trend>> list = query.GroupBy(x => x.Timestamp.ToString()).ToList();
 
                 
                 // prelevo le categorie del grafico
@@ -61,28 +59,42 @@ namespace trendwallapi.Controllers
                                 into categorieClass
                                 select categorieClass).ToDictionary(gdc => gdc.Key,gdc => gdc.ToList());
 
+                var per_hash = query.GroupBy(x=>x.Name,StringComparer.InvariantCultureIgnoreCase)
+                .ToDictionary(gdc => gdc.Key,gdc => gdc.ToList());
                 
                 List<Dictionary<string,object>> series = new List<Dictionary<string, object>>();
 
 
-                foreach (var item in per_hashtag)
-                {
+                foreach (var item in per_hash)
+                { 
+                    if(!item.Key.StartsWith("#"))continue;
+
                     Dictionary<string,object> serie = new Dictionary<string, object>();
                     List<int> data = new List<int>();    
                     foreach (var cat in categorie)
                     {
                         int count = 0;
+                        int max = item.Value.Max( r => r.Count);
                         foreach (var itemcat in item.Value)
                         {
                             string datestr = itemcat.Timestamp.ToString("dd-MM-yyyy HH:mm");
-                            if( datestr.Equals(cat))
-                                count = itemcat.Count;
+                            if( datestr.Equals(cat)){
+                                if(itemcat.Count==max){
+                                    count = itemcat.Count;
+                                }
+                            }
                         }   
                         data.Add(count);
                     }
                     serie.Add("name",item.Key);
                     serie.Add("data",data);
                     
+                    Dictionary<string, object> marker = new Dictionary<string, object>();
+                    marker.Add("enabled",false);
+                    marker.Add("symbol","square");
+                    serie.Add("marker",marker);
+
+
                     series.Add(serie);
                 }
 
