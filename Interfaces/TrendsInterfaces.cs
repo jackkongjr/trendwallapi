@@ -14,6 +14,10 @@ namespace trendwallapi.Interfaces
 
         Trend Get(string id);
         
+        public List<Trend> GetByTimestamp(DateTime tstamp,string country);
+
+        Trend Latest(string country);
+
         List<Trend> Query(DateTime from, DateTime to, string country);
 
         Trend Create(Trend trend);

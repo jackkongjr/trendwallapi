@@ -29,7 +29,7 @@ namespace trendwallapi.Controllers
             _trendsService = trendsService;
         }
 
-        
+         
         //https://localhost:5001/api/trends/14-02-2021/14-02-2021/0000/1600/it
 
         [HttpGet("{from}/{to}/{ora_from}/{ora_to}/{country}")]
@@ -38,6 +38,15 @@ namespace trendwallapi.Controllers
             
             try
             {
+                //tendenze attuali
+                // Trend ultimo =  _trendsService.Latest(country);
+                // DateTime data_rl = ultimo.Timestamp;
+                // List<Trend> lasts = _trendsService.GetByTimestamp(data_rl,country.ToUpper());
+
+
+                Dictionary<string,object> result = new Dictionary<string, object>();
+
+
                 DateTime dt_from = Utils.DateHelper.Parse(from,ora_from);
                 DateTime dt_to = Utils.DateHelper.Parse(to,ora_to);
                 country = country.ToUpper().Substring(0,2);
@@ -63,12 +72,9 @@ namespace trendwallapi.Controllers
                 .ToDictionary(gdc => gdc.Key,gdc => gdc.ToList());
                 
                 List<Dictionary<string,object>> series = new List<Dictionary<string, object>>();
-
-
                 foreach (var item in per_hash)
                 { 
-                    if(!item.Key.StartsWith("#"))continue;
-
+                    //if(!item.Key.StartsWith("#"))continue;
                     Dictionary<string,object> serie = new Dictionary<string, object>();
                     List<int> data = new List<int>();    
                     foreach (var cat in categorie)
@@ -88,27 +94,17 @@ namespace trendwallapi.Controllers
                     }
                     serie.Add("name",item.Key);
                     serie.Add("data",data);
-                    
                     Dictionary<string, object> marker = new Dictionary<string, object>();
                     marker.Add("enabled",false);
                     marker.Add("symbol","square");
                     serie.Add("marker",marker);
-
-
                     series.Add(serie);
                 }
+                
+                result.Add("categories",categorie);
+                result.Add("series",series);
 
-
-                 Dictionary<string,object> result = new Dictionary<string, object>();
-                 result.Add("categories",categorie);
-                 result.Add("series",series);
-
-
-                // var groupedDemoClasses = (from item in query
-                //           group item by item.Timestamp
-                //           into groupedDemoClass
-                //           select groupedDemoClass).ToDictionary(gdc => gdc.Key.ToString("dd-MM-yyyy HH:mm"), gdc => gdc.ToList());
-
+                //result.Add("current",lasts);
                 return result;
                
             }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using trendwallapi.Interfaces;
 using System;
+using MongoDB.Driver.Linq;
 
 namespace trendwallapi.Services
 {
@@ -23,17 +24,30 @@ namespace trendwallapi.Services
             _trends.Find(trend => true).ToList();
 
 
+        public Trend Latest(string country) {
+             
+            Trend allDocs = _trends.AsQueryable().OrderByDescending(c => c.Id).First();;
+
+            return allDocs;
+        }
+
+
         public List<Trend> Query(DateTime from, DateTime to,string country) {
             
             var filter = Builders<Trend>.Filter.Eq("country", country);
                 
             List<Trend> res = _trends.Find<Trend>(trend => trend.Country.Equals(country) &&  
-            trend.Timestamp>from && trend.Timestamp < to )
+            trend.Timestamp>=from && trend.Timestamp <= to )
            // .Project<Trend>(Builders<Trend>.Projection.Exclude(t => t.Id))
             .ToList();
 
             return res;
         }
+
+
+        public List<Trend> GetByTimestamp(DateTime tstamp,string country) =>
+            _trends.Find<Trend>(trend => trend.Timestamp == tstamp && trend.Country.Equals(country)).ToList();
+
 
         public Trend Get(string name) =>
             _trends.Find<Trend>(trend => trend.Name == name).FirstOrDefault();
