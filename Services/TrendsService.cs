@@ -34,20 +34,33 @@ namespace trendwallapi.Services
 
         public List<Trend> Query(DateTime from, DateTime to,string country) {
             
+            if(country.ToUpper().Equals("ALL")){
+                return  _trends.Find<Trend>(trend =>  trend.Timestamp>=from && trend.Timestamp <= to ).Sort(Builders<Trend>.Sort.Descending("Count"))
+                .ToList();;
+            }
+
             var filter = Builders<Trend>.Filter.Eq("country", country);
-                
-            List<Trend> res = _trends.Find<Trend>(trend => trend.Country.Equals(country) &&  
+            return  _trends.Find<Trend>(trend => trend.Country.Equals(country) &&  
             trend.Timestamp>=from && trend.Timestamp <= to )
+            .Sort(Builders<Trend>.Sort.Descending("Count"))
            // .Project<Trend>(Builders<Trend>.Projection.Exclude(t => t.Id))
             .ToList();
 
-            return res;
+        
         }
 
 
-        public List<Trend> GetByTimestamp(DateTime tstamp,string country) =>
-            _trends.Find<Trend>(trend => trend.Timestamp == tstamp && trend.Country.Equals(country)).ToList();
-
+        public List<Trend> GetByTimestamp(DateTime tstamp,string country) {
+        
+            if ((country.ToUpper().Equals("ALL"))){
+                return _trends.Find<Trend>(trend => trend.Timestamp == tstamp).Sort(Builders<Trend>.Sort.Descending("Count"))
+                .ToList()
+                .GroupBy(o =>  o.Name ,StringComparer.InvariantCultureIgnoreCase)
+               .Select(o => o.FirstOrDefault()).ToList()  ;
+            }
+           return _trends.Find<Trend>(trend => trend.Timestamp == tstamp && trend.Country.Equals(country)).ToList();
+                     //.Sort(Builders<Trend>.Sort.Descending("Count")).ToList();
+        }
 
         public Trend Get(string name) =>
             _trends.Find<Trend>(trend => trend.Name == name).FirstOrDefault();
