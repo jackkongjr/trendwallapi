@@ -42,7 +42,7 @@ namespace trendwallapi.Services
             var filter = Builders<Trend>.Filter.Eq("country", country);
             return  _trends.Find<Trend>(trend => trend.Country.Equals(country) &&  
             trend.Timestamp>=from && trend.Timestamp <= to )
-            .Sort(Builders<Trend>.Sort.Descending("Count"))
+            //.Sort(Builders<Trend>.Sort.Descending("Count"))
            // .Project<Trend>(Builders<Trend>.Projection.Exclude(t => t.Id))
             .ToList();
 

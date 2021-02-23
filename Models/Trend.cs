@@ -22,8 +22,14 @@ namespace trendwallapi.Models
         public string Url { get; set; }
 
 
+        private DateTime _timestamp;
         [BsonElement("timestamp")]               
-        public DateTime Timestamp {get;set;}
+        public DateTime Timestamp {
+            get{
+                return _timestamp.ToLocalTime();
+            }
+            set{ _timestamp = value;}
+        }
 
         [BsonElement("count")]
         public int Count { get; set; }
