@@ -50,6 +50,16 @@ namespace trendwallapi.Services
         }
 
 
+        public List<Trend> GetByTimestampNotGrouped(DateTime tstamp,string country) {
+        
+            if ((country.ToUpper().Equals("ALL"))){
+                return _trends.Find<Trend>(trend => trend.Timestamp == tstamp).Sort(Builders<Trend>.Sort.Descending("Count"))
+                .ToList();
+            }
+           return _trends.Find<Trend>(trend => trend.Timestamp == tstamp && trend.Country.Equals(country)).ToList();
+                     //.Sort(Builders<Trend>.Sort.Descending("Count")).ToList();
+        }
+
         public List<Trend> GetByTimestamp(DateTime tstamp,string country) {
         
             if ((country.ToUpper().Equals("ALL"))){

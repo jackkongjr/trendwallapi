@@ -14,6 +14,8 @@ namespace trendwallapi.Interfaces
 
         Trend Get(string id);
         
+        public List<Trend> GetByTimestampNotGrouped(DateTime tstamp,string country); 
+
         public List<Trend> GetByTimestamp(DateTime tstamp,string country);
 
         Trend Latest(string country);
