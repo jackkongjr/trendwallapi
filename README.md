@@ -4,7 +4,7 @@ This is a .NET 5.0 project.
 
 It's a REST Service ahead of a MongoDB instance
 
-Follows a picture from the front-end part
+Follows a picture from the front-end part in an angular project in a separate private repository for now
 
 ![immagine](https://user-images.githubusercontent.com/36534362/109786749-c6672680-7c0d-11eb-8023-ac9017c5cd9e.png)
 
