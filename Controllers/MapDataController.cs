@@ -48,7 +48,7 @@ namespace trendwallapi.Controllers
                                 group item by item.Country
                                 into categorieClass
                                 select categorieClass).ToDictionary(gdc => gdc.Key,gdc => gdc.ToList());
-                //result.Add("current",lasts);
+                
                 return per_hashtag;
                
             }

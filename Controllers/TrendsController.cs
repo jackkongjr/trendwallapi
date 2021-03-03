@@ -30,7 +30,7 @@ namespace trendwallapi.Controllers
         }
 
          
-        //https://localhost:5001/api/trends/14-02-2021/14-02-2021/0000/1600/it
+        //http://localhost:5001/api/trends/14-02-2021/14-02-2021/0000/1600/it
 
         [HttpGet("{from}/{to}/{ora_from}/{ora_to}/{country}")]
         public ActionResult<Dictionary<string, object>> Get(string from, string to, string ora_from, string ora_to, string country) 
@@ -38,12 +38,7 @@ namespace trendwallapi.Controllers
             
             try
             {
-                //tendenze attuali
-                // Trend ultimo =  _trendsService.Latest(country);
-                // DateTime data_rl = ultimo.Timestamp;
-                // List<Trend> lasts = _trendsService.GetByTimestamp(data_rl,country.ToUpper());
-
-
+                
                 Dictionary<string,object> result = new Dictionary<string, object>();
 
 
@@ -52,9 +47,7 @@ namespace trendwallapi.Controllers
                 country = country.ToUpper().Substring(0,2);
 
                 List<Trend> query =  _trendsService.Query(dt_from,dt_to,country);
-
                 List<IGrouping<string, Trend>> list = query.GroupBy(x => x.Timestamp.ToString()).ToList();
-
                 
                 // prelevo le categorie del grafico
                 var categorie = (from item in query 
@@ -74,7 +67,7 @@ namespace trendwallapi.Controllers
                 List<Dictionary<string,object>> series = new List<Dictionary<string, object>>();
                 foreach (var item in per_hash)
                 { 
-                    //if(!item.Key.StartsWith("#"))continue;
+                     
                     Dictionary<string,object> serie = new Dictionary<string, object>();
                     List<int> data = new List<int>();    
                     foreach (var cat in categorie)
@@ -104,7 +97,7 @@ namespace trendwallapi.Controllers
                 result.Add("categories",categorie);
                 result.Add("series",series);
 
-                //result.Add("current",lasts);
+               
                 return result;
                
             }
